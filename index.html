@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binarne kartice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 80px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid black;
+            cursor: pointer;
+            user-select: none;
+            background-color: rgb(71, 67, 67);
+            color: white;
+        }
+        .active {
+            background-color: yellow;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Binarne kartice</h1>
+    <p>Klikni na kartice, da vključiš ali izključiš binarne vrednosti.</p>
+    <div class="container" id="cards"></div>
+    <h2>Desetiški prikaz: <span id="decimal-value">0</span></h2>
+    <h2>Dvojiški prikaz: <span id="binary-value">00000000</span></h2>
+    <button onclick="resetCards()">Ponastavi</button>
+
+    <script>
+        const values = [128, 64, 32, 16, 8, 4, 2, 1]; // Binarne vrednosti kartic
+        const cardsContainer = document.getElementById("cards");
+        const decimalDisplay = document.getElementById("decimal-value");
+        const binaryDisplay = document.getElementById("binary-value");
+        let activeValues = new Array(values.length).fill(0);
+
+        function updateDisplays() {
+            let decimalValue = activeValues.reduce((sum, val, index) => sum + val * values[index], 0);
+            decimalDisplay.textContent = decimalValue;
+            binaryDisplay.textContent = activeValues.join("");
+        }
+
+        function toggleCard(index) {
+            activeValues[index] = activeValues[index] === 0 ? 1 : 0;
+            document.getElementById(`card-${index}`).classList.toggle("active");
+            updateDisplays();
+        }
+
+        function resetCards() {
+            activeValues.fill(0);
+            document.querySelectorAll(".card").forEach(card => card.classList.remove("active"));
+            updateDisplays();
+        }
+
+        values.forEach((value, index) => {
+            let card = document.createElement("div");
+            card.classList.add("card");
+            card.id = `card-${index}`;
+            card.textContent = value;
+            card.onclick = () => toggleCard(index);
+            cardsContainer.appendChild(card);
+        });
+    </script>
+</body>
+</html>
