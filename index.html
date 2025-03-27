@@ -12,13 +12,15 @@
         .container {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         .card {
-            width: 80px;
-            height: 120px;
+            width: 140px;
+            height: 220px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-size: 24px;
@@ -26,25 +28,57 @@
             border: 2px solid black;
             cursor: pointer;
             user-select: none;
-            background-color: rgb(71, 67, 67);
-            color: white;
+            background-color: white;
+            color: black;
+            padding: 10px;
+            position: relative;
         }
         .active {
             background-color: yellow;
-            color: black;
+        }
+        .dots {
+            display: grid;
+            justify-content: center;
+            align-content: center;
+            height: 100%;
+        }
+        .dots.spacing-large {
+            gap: 4px;
+        }
+        .dots.spacing-small {
+            gap: 1px;
+        }
+        .dot {
+            border-radius: 50%;
+            background-color: black;
+            margin: 2px;
+        }
+        .value {
+            font-size: 20px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Binarne kartice</h1>
-    <p>Klikni na kartice, da vključiš ali izključiš binarne vrednosti.</p>
+    <h1>Binary Cards</h1>
     <div class="container" id="cards"></div>
     <h2>Desetiški prikaz: <span id="decimal-value">0</span></h2>
     <h2>Dvojiški prikaz: <span id="binary-value">00000000</span></h2>
     <button onclick="resetCards()">Ponastavi</button>
 
     <script>
-        const values = [128, 64, 32, 16, 8, 4, 2, 1]; // Binarne vrednosti kartic
+        const values = [128, 64, 32, 16, 8, 4, 2, 1];
+        const cardLayouts = {
+            128: { columns: 8, size: 6, gapClass: 'spacing-small' },
+            64: { columns: 8, size: 8, gapClass: 'spacing-large' },
+            32: { columns: 4, size: 10, gapClass: 'spacing-large' },
+            16: { columns: 4, size: 12, gapClass: 'spacing-large' },
+            8: { columns: 2, size: 16, gapClass: 'spacing-large' },
+            4: { columns: 2, size: 20, gapClass: 'spacing-large' },
+            2: { columns: 1, size: 24, gapClass: 'spacing-large' },
+            1: { columns: 1, size: 28, gapClass: 'spacing-large' }
+        };
+
         const cardsContainer = document.getElementById("cards");
         const decimalDisplay = document.getElementById("decimal-value");
         const binaryDisplay = document.getElementById("binary-value");
@@ -69,11 +103,31 @@
         }
 
         values.forEach((value, index) => {
+            const layout = cardLayouts[value];
+
             let card = document.createElement("div");
             card.classList.add("card");
             card.id = `card-${index}`;
-            card.textContent = value;
             card.onclick = () => toggleCard(index);
+
+            let dotsContainer = document.createElement("div");
+            dotsContainer.classList.add("dots", layout.gapClass);
+            dotsContainer.style.gridTemplateColumns = `repeat(${layout.columns}, auto)`;
+
+            for (let i = 0; i < value; i++) {
+                let dot = document.createElement("div");
+                dot.classList.add("dot");
+                dot.style.width = `${layout.size}px`;
+                dot.style.height = `${layout.size}px`;
+                dotsContainer.appendChild(dot);
+            }
+
+            let valueText = document.createElement("div");
+            valueText.classList.add("value");
+            valueText.textContent = value;
+
+            card.appendChild(dotsContainer);
+            card.appendChild(valueText);
             cardsContainer.appendChild(card);
         });
     </script>
